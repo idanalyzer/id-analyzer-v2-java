@@ -13,7 +13,7 @@
     <description>Java/Kotlin client library for the ID Analyzer API v2: worldwide passport,
         driver license and ID card scanning, biometric face/liveness verification, AML/PEP
         screening, DocuPass remote verification and e-signature, KYC profile management and
-        contract generation. Targets the api2.idanalyzer.com fleet.</description>
+        contract generation. Targets the api2.idanalyzer.com endpoint.</description>
     <url>https://github.com/idanalyzer/id-analyzer-v2-java</url>
 
     <licenses>
