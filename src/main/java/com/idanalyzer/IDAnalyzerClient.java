@@ -20,7 +20,7 @@ import java.util.Map;
 /**
  * Client for the ID Analyzer API v2.
  *
- * <p>Targets the load-balanced {@code api2.idanalyzer.com} fleet (US, default) or
+ * <p>Targets the {@code api2.idanalyzer.com} endpoint (US, default) or
  * {@code api2-eu.idanalyzer.com} (EU). Use the public service fields ({@link #scanner},
  * {@link #biometric}, {@link #aml}, {@link #contract}, {@link #transaction},
  * {@link #docupass}, {@link #profile}, {@link #webhook}, {@link #account}).

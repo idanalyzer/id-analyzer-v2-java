@@ -46,7 +46,7 @@ Requires Java 11+ (built on `java.net.http`; JSON via Jackson).
 
 ## Authentication & region
 
-Pass your API key to the constructor, or set the `IDANALYZER_KEY` environment variable. The SDK targets the load-balanced US fleet (`https://api2.idanalyzer.com`) by default; select the EU fleet via `IDANALYZER_REGION=eu` or `new IDAnalyzerClient(key, "eu")`. For on-premise ID Fort, call `client.setBaseUrl("https://your-host")`.
+Pass your API key to the constructor, or set the `IDANALYZER_KEY` environment variable. The SDK targets the US endpoint (`https://api2.idanalyzer.com`) by default; select the EU endpoint via `IDANALYZER_REGION=eu` or `new IDAnalyzerClient(key, "eu")`. For on-premise ID Fort, call `client.setBaseUrl("https://your-host")`.
 
 ## Quick start
 
