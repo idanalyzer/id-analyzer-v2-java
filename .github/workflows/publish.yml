@@ -1,0 +1,42 @@
+name: Publish to Maven Central
+
+# Publishes com.idanalyzer:id-analyzer-v2 to Maven Central (Sonatype Central Portal)
+# when a version tag (v*) is pushed.
+#
+# Required repository secrets:
+#   CENTRAL_TOKEN_USERNAME  - Central Portal user token username
+#   CENTRAL_TOKEN_PASSWORD  - Central Portal user token password
+#   MAVEN_GPG_PRIVATE_KEY   - ASCII-armored GPG private key (full block)
+#   MAVEN_GPG_PASSPHRASE    - passphrase for that GPG key
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          server-id: central
+          server-username: CENTRAL_USERNAME
+          server-password: CENTRAL_PASSWORD
+          gpg-private-key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
+          gpg-passphrase: MAVEN_GPG_PASSPHRASE
+
+      - name: Deploy to Maven Central
+        run: mvn --batch-mode --no-transfer-progress -Prelease deploy
+        env:
+          CENTRAL_USERNAME: ${{ secrets.CENTRAL_TOKEN_USERNAME }}
+          CENTRAL_PASSWORD: ${{ secrets.CENTRAL_TOKEN_PASSWORD }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
