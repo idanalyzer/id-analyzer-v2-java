@@ -11,7 +11,12 @@ public class Account {
         this.client = client;
     }
 
-    /** Retrieve the current account profile, quota and usage. */
+    /**
+     * Retrieve the current account profile, quota and usage.
+     *
+     * @return the API response as a {@link JsonNode}.
+     * @throws ApiException if the API returns an error or a transport error occurs.
+     */
     public JsonNode getAccount() {
         return client.request("GET", "myaccount", null, null);
     }

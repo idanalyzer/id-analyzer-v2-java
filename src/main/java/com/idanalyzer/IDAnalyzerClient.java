@@ -36,17 +36,31 @@ public class IDAnalyzerClient {
     private final HttpClient http;
     private final ObjectMapper mapper = new ObjectMapper();
 
+    /** Document scanning &amp; ID verification service. */
     public final Scanner scanner;
+    /** Biometric face &amp; liveness verification service. */
     public final Biometric biometric;
+    /** AML / PEP / sanctions screening service. */
     public final AML aml;
+    /** Contract generation &amp; template management service. */
     public final Contract contract;
+    /** Transaction history, decisions, vault assets and export service. */
     public final Transaction transaction;
+    /** DocuPass remote verification &amp; e-signature link management service. */
     public final Docupass docupass;
+    /** Server-side KYC profile management service. */
     public final ProfileApi profile;
+    /** Webhook delivery log management service. */
     public final Webhook webhook;
+    /** Account information service. */
     public final Account account;
 
-    /** Creates a client; region is read from {@code IDANALYZER_REGION} (default "us"). */
+    /**
+     * Creates a client; region is read from {@code IDANALYZER_REGION} (default "us").
+     *
+     * @param apiKey API key; falls back to the {@code IDANALYZER_KEY} environment variable.
+     * @throws InvalidArgumentException if no API key is supplied or resolvable from the environment.
+     */
     public IDAnalyzerClient(String apiKey) {
         this(apiKey, null);
     }
@@ -56,6 +70,7 @@ public class IDAnalyzerClient {
      *
      * @param apiKey API key; falls back to the {@code IDANALYZER_KEY} environment variable.
      * @param region "us" or "eu"; if null, falls back to {@code IDANALYZER_REGION} (default "us").
+     * @throws InvalidArgumentException if no API key is supplied or resolvable, or the region is not "us"/"eu".
      */
     public IDAnalyzerClient(String apiKey, String region) {
         if (apiKey == null || apiKey.isEmpty()) {
@@ -94,7 +109,12 @@ public class IDAnalyzerClient {
         this.account = new Account(this);
     }
 
-    /** Override the API base URL entirely (e.g. for an on-premise ID Fort host). */
+    /**
+     * Override the API base URL entirely (e.g. for an on-premise ID Fort host).
+     *
+     * @param baseUrl the base URL to use for all requests; a trailing slash is stripped.
+     * @return this client, for chaining.
+     */
     public IDAnalyzerClient setBaseUrl(String baseUrl) {
         if (baseUrl.endsWith("/")) {
             baseUrl = baseUrl.substring(0, baseUrl.length() - 1);
@@ -191,6 +211,12 @@ public class IDAnalyzerClient {
     /**
      * Accepts a file path, base64 string, URL, or (when allowCache) a "ref:" cache
      * reference, and returns the value to send to the API.
+     *
+     * @param input a local file path, a base64-encoded image, an http(s) URL, or a "ref:" cache reference.
+     * @param allowCache whether a "ref:" cache reference is accepted and passed through unchanged.
+     * @return the value to send to the API: the URL/reference as-is, or the base64 encoding of a local file.
+     * @throws InvalidArgumentException if a local file cannot be read, or the input is neither a readable
+     *         file, a URL, a cache reference, nor a long-enough base64 string.
      */
     public static String parseInput(String input, boolean allowCache) {
         if (allowCache && input.startsWith("ref:")) {
