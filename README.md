@@ -77,7 +77,7 @@ API-level errors throw `ApiException` (with `getCode()` and `getMessage()`);
 invalid client-side arguments throw `InvalidArgumentException`. Both are unchecked.
 
 ## Documentation
-Guide: [idanalyzer.helptal.com/help/java](https://idanalyzer.helptal.com/help/java) · Knowledge base: [idanalyzer.helptal.com/help](https://idanalyzer.helptal.com/help)
+Guide: [developer.idanalyzer.com/help/java](https://developer.idanalyzer.com/help/java) · Knowledge base: [developer.idanalyzer.com/help](https://developer.idanalyzer.com/help)
 
 ## License
 MIT
