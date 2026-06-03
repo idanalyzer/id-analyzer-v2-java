@@ -76,5 +76,8 @@ The SDK exposes the full ID Analyzer API v2 surface via service fields on the cl
 API-level errors throw `ApiException` (with `getCode()` and `getMessage()`);
 invalid client-side arguments throw `InvalidArgumentException`. Both are unchecked.
 
+## Documentation
+Guide: [idanalyzer.helptal.com/help/java](https://idanalyzer.helptal.com/help/java) · Knowledge base: [idanalyzer.helptal.com/help](https://idanalyzer.helptal.com/help)
+
 ## License
 MIT
