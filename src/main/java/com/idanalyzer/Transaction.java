@@ -17,18 +17,37 @@ public class Transaction {
 
     /** Filters for listing/exporting transactions. */
     public static class ListOptions {
+        /** Creates an options object with default values that can be overridden before use. */
+        public ListOptions() {}
+
+        /** Sort order for the results. */
         public int order = -1;
+        /** Maximum number of transactions to return. */
         public int limit = 10;
+        /** Number of transactions to skip (for pagination). */
         public int offset = 0;
+        /** Lower bound (inclusive) on creation time; only applied when greater than 0. */
         public int createdAtMin = 0;
+        /** Upper bound (inclusive) on creation time; only applied when greater than 0. */
         public int createdAtMax = 0;
+        /** Filter by the custom data stored with the transaction; applied when non-empty. */
         public String customData;
+        /** Filter by decision ("accept"/"review"/"reject"); applied when non-empty. */
         public String decision;
+        /** Filter by associated Docupass reference; applied when non-empty. */
         public String docupass;
+        /** Filter by KYC profile id; applied when non-empty. */
         public String profileId;
     }
 
-    /** Retrieve a single transaction (GET /transaction/{id}). */
+    /**
+     * Retrieve a single transaction (GET /transaction/{id}).
+     *
+     * @param transactionId the transaction id to retrieve.
+     * @return the API response as a {@link JsonNode}.
+     * @throws InvalidArgumentException if transactionId is null or empty.
+     * @throws ApiException if the API returns an error or a transport error occurs.
+     */
     public JsonNode getTransaction(String transactionId) {
         if (transactionId == null || transactionId.isEmpty()) {
             throw new InvalidArgumentException("transactionId is required");
@@ -36,7 +55,13 @@ public class Transaction {
         return client.request("GET", "transaction/" + transactionId, null, null);
     }
 
-    /** Retrieve transaction history (GET /transaction). */
+    /**
+     * Retrieve transaction history (GET /transaction).
+     *
+     * @param opts the filter/pagination options; defaults are used when null.
+     * @return the API response as a {@link JsonNode}.
+     * @throws ApiException if the API returns an error or a transport error occurs.
+     */
     public JsonNode listTransaction(ListOptions opts) {
         if (opts == null) opts = new ListOptions();
         Map<String, String> q = new LinkedHashMap<>();
@@ -52,7 +77,15 @@ public class Transaction {
         return client.request("GET", "transaction", null, q);
     }
 
-    /** Update a transaction decision (PATCH /transaction/{id}). */
+    /**
+     * Update a transaction decision (PATCH /transaction/{id}).
+     *
+     * @param transactionId the transaction id to update.
+     * @param decision the new decision; must be one of "accept", "review" or "reject".
+     * @return the API response as a {@link JsonNode}.
+     * @throws InvalidArgumentException if transactionId is null/empty or decision is not a valid value.
+     * @throws ApiException if the API returns an error or a transport error occurs.
+     */
     public JsonNode updateTransaction(String transactionId, String decision) {
         if (transactionId == null || transactionId.isEmpty()) {
             throw new InvalidArgumentException("transactionId is required");
@@ -65,7 +98,14 @@ public class Transaction {
         return client.request("PATCH", "transaction/" + transactionId, payload, null);
     }
 
-    /** Delete a transaction (DELETE /transaction/{id}). */
+    /**
+     * Delete a transaction (DELETE /transaction/{id}).
+     *
+     * @param transactionId the transaction id to delete.
+     * @return the API response as a {@link JsonNode}.
+     * @throws InvalidArgumentException if transactionId is null or empty.
+     * @throws ApiException if the API returns an error or a transport error occurs.
+     */
     public JsonNode deleteTransaction(String transactionId) {
         if (transactionId == null || transactionId.isEmpty()) {
             throw new InvalidArgumentException("transactionId is required");
@@ -73,7 +113,14 @@ public class Transaction {
         return client.request("DELETE", "transaction/" + transactionId, null, null);
     }
 
-    /** Download a vault image to dest (GET /imagevault/{token}). */
+    /**
+     * Download a vault image to dest (GET /imagevault/{token}).
+     *
+     * @param imageToken the image vault token identifying the image.
+     * @param dest the local file path to write the downloaded image to.
+     * @throws InvalidArgumentException if imageToken or dest is null or empty.
+     * @throws ApiException if the download fails (transport error).
+     */
     public void saveImage(String imageToken, String dest) {
         if (imageToken == null || imageToken.isEmpty() || dest == null || dest.isEmpty()) {
             throw new InvalidArgumentException("imageToken and dest are required");
@@ -81,7 +128,14 @@ public class Transaction {
         client.download("imagevault/" + imageToken, dest);
     }
 
-    /** Download a vault file to dest (GET /filevault/{name}). */
+    /**
+     * Download a vault file to dest (GET /filevault/{name}).
+     *
+     * @param fileName the file vault name identifying the file.
+     * @param dest the local file path to write the downloaded file to.
+     * @throws InvalidArgumentException if fileName or dest is null or empty.
+     * @throws ApiException if the download fails (transport error).
+     */
     public void saveFile(String fileName, String dest) {
         if (fileName == null || fileName.isEmpty() || dest == null || dest.isEmpty()) {
             throw new InvalidArgumentException("fileName and dest are required");
@@ -89,7 +143,18 @@ public class Transaction {
         client.download("filevault/" + fileName, dest);
     }
 
-    /** Request a transaction archive and download it to dest (POST /export/transaction). */
+    /**
+     * Request a transaction archive and download it to dest (POST /export/transaction).
+     *
+     * @param dest the local file path to write the downloaded archive to.
+     * @param exportType the export format; defaults to "csv" when null/empty, must be "csv" or "json".
+     * @param transactionIds optional explicit list of transaction ids to export; sent when non-empty.
+     * @param ignoreUnrecognized whether to exclude unrecognized documents from the export.
+     * @param ignoreDuplicate whether to exclude duplicate transactions from the export.
+     * @param opts optional filter/pagination options; defaults are used when null.
+     * @throws InvalidArgumentException if dest is null/empty or exportType is not "csv"/"json".
+     * @throws ApiException if the API returns an error or a transport/download error occurs.
+     */
     public void exportTransaction(String dest, String exportType, List<String> transactionIds,
                                   boolean ignoreUnrecognized, boolean ignoreDuplicate, ListOptions opts) {
         if (dest == null || dest.isEmpty()) {
