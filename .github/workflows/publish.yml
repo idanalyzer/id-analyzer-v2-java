@@ -34,6 +34,18 @@ jobs:
           gpg-private-key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
 
+      - name: Publish public GPG key to keyservers
+        run: |
+          KEYID=$(gpg --list-secret-keys --with-colons | awk -F: '/^sec/{print $5; exit}')
+          echo "Publishing public key $KEYID"
+          gpg --armor --export "$KEYID" > pub.asc
+          # keys.openpgp.org: synchronous, retrievable by fingerprint immediately
+          curl -sS -m 30 --data-urlencode "keytext@pub.asc" https://keys.openpgp.org/vks/v1/upload || true
+          echo
+          # keyserver.ubuntu.com (best-effort; may lag)
+          gpg --batch --keyserver keyserver.ubuntu.com --send-keys "$KEYID" || true
+          rm -f pub.asc
+
       - name: Deploy to Maven Central
         run: mvn --batch-mode --no-transfer-progress -Prelease deploy
         env:
