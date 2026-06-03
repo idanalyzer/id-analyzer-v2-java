@@ -6,7 +6,7 @@
 
     <groupId>com.idanalyzer</groupId>
     <artifactId>id-analyzer-v2</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <packaging>jar</packaging>
 
     <name>ID Analyzer API v2 SDK</name>
