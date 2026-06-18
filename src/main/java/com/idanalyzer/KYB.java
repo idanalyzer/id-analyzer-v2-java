@@ -8,7 +8,8 @@ import java.util.Map;
 /**
  * KYB (Know Your Business) verification (POST /kyb).
  *
- * <p>Verifies a business from its registration/incorporation document: extracts
+ * <p>Verify a business from its registration/incorporation document. A document
+ * is required; an optional profile selects the KYC profile. The service extracts
  * the company details, checks official company registries, screens against
  * sanctions/PEP watchlists, and returns directors and owners to verify.
  */
@@ -21,43 +22,34 @@ public class KYB {
     }
 
     /**
-     * Verify a business. Provide a registration/incorporation document and/or known
-     * business identifiers; the service extracts the company details, checks official
-     * company registries, screens against sanctions/PEP watchlists, and returns
-     * directors and owners to verify. At least one of document, legalName or
-     * registrationNumber must be supplied.
+     * Verify a business from its registration/incorporation document.
      *
-     * @param document registration/incorporation document — a file path, raw base64, URL, or data URL; optional.
-     * @param legalName registered legal name of the business; optional.
-     * @param legalNameLocal registered legal name in the local language/script; optional.
-     * @param registrationNumber company registration / incorporation number; optional.
-     * @param taxNumber business tax number; optional.
-     * @param lei Legal Entity Identifier (LEI); optional.
-     * @param country two-letter ISO country code where the business is registered; optional.
-     * @param state state/province where the business is registered; optional.
-     * @param entityType business entity type; optional.
+     * @param document registration/incorporation document — a file path, raw base64, URL, or data URL; required.
      * @return the API response as a {@link JsonNode}.
-     * @throws InvalidArgumentException if none of document, legalName or registrationNumber is supplied.
+     * @throws InvalidArgumentException if document is null or empty.
      * @throws ApiException if the API returns an error or a transport error occurs.
      */
-    public JsonNode verify(String document, String legalName, String legalNameLocal,
-                           String registrationNumber, String taxNumber, String lei,
-                           String country, String state, String entityType) {
-        if ((document == null || document.isEmpty())
-                && (legalName == null || legalName.isEmpty())
-                && (registrationNumber == null || registrationNumber.isEmpty())) {
-            throw new InvalidArgumentException("Provide a document, or legalName/registrationNumber.");
+    public JsonNode verify(String document) {
+        return verify(document, null);
+    }
+
+    /**
+     * Verify a business from its registration/incorporation document. A document
+     * is required; an optional profile selects the KYC profile.
+     *
+     * @param document registration/incorporation document — a file path, raw base64, URL, or data URL; required.
+     * @param profile KYC profile id to apply; optional.
+     * @return the API response as a {@link JsonNode}.
+     * @throws InvalidArgumentException if document is null or empty.
+     * @throws ApiException if the API returns an error or a transport error occurs.
+     */
+    public JsonNode verify(String document, String profile) {
+        if (document == null || document.isEmpty()) {
+            throw new InvalidArgumentException("A business document (image or PDF) is required.");
         }
         Map<String, Object> payload = new LinkedHashMap<>();
-        if (document != null && !document.isEmpty()) payload.put("document", IDAnalyzerClient.parseInput(document, true));
-        if (legalName != null && !legalName.isEmpty()) payload.put("legalName", legalName);
-        if (legalNameLocal != null && !legalNameLocal.isEmpty()) payload.put("legalNameLocal", legalNameLocal);
-        if (registrationNumber != null && !registrationNumber.isEmpty()) payload.put("registrationNumber", registrationNumber);
-        if (taxNumber != null && !taxNumber.isEmpty()) payload.put("taxNumber", taxNumber);
-        if (lei != null && !lei.isEmpty()) payload.put("lei", lei);
-        if (entityType != null && !entityType.isEmpty()) payload.put("entityType", entityType);
-        if (country != null && !country.isEmpty()) payload.put("countryIso2", country);
-        if (state != null && !state.isEmpty()) payload.put("state", state);
+        payload.put("document", IDAnalyzerClient.parseInput(document, true));
+        if (profile != null && !profile.isEmpty()) payload.put("profile", profile);
         // KYB is heavier than a scan, allow up to 120 seconds for the response.
         return client.request("POST", "kyb", payload, null, 120);
     }
