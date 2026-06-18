@@ -72,6 +72,13 @@ System.out.println(result.get("decision"));   // accept / review / reject
 client.aml.search("John Smith", null, 0, "US", null, null);   // POST /aml
 client.aml.searchV3("John Smith", null, 10, 1);               // POST /amlv3
 
+// KYB — business verification
+// Verify a business from its registration/incorporation document: extract
+// details, check official company registries, screen against sanctions/PEP,
+// and return directors/owners to verify.
+client.kyb.verify("registration.jpg", null, null, null, null, null, null, null, null);          // from a document
+client.kyb.verify(null, "ACME CORPORATION", null, "12345678", null, null, "US", null, null);     // from known details
+
 // DocuPass — hosted remote verification link
 Docupass.CreateRequest req = new Docupass.CreateRequest();
 req.profile = "YOUR_PROFILE_ID";
@@ -88,6 +95,7 @@ The SDK wraps the complete ID Analyzer API v2 surface via service fields on the 
 | `client.scanner` | `scan`, `quickScan`, `veryQuickScan` |
 | `client.biometric` | `verifyFace`, `verifyLiveness` |
 | `client.aml` | `search` (`/aml`), `searchV3` (`/amlv3`) |
+| `client.kyb` | `verify` (`/kyb`) |
 | `client.contract` | `generate` + template CRUD |
 | `client.transaction` | `getTransaction`, `listTransaction`, `updateTransaction`, `deleteTransaction`, `exportTransaction`, `saveImage`, `saveFile` |
 | `client.docupass` | `createDocupass`, `listDocupass`, `getDocupass`, `deleteDocupass` |
