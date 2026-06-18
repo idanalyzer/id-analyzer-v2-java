@@ -73,11 +73,12 @@ client.aml.search("John Smith", null, 0, "US", null, null);   // POST /aml
 client.aml.searchV3("John Smith", null, 10, 1);               // POST /amlv3
 
 // KYB — business verification
-// Verify a business from its registration/incorporation document: extract
-// details, check official company registries, screen against sanctions/PEP,
-// and return directors/owners to verify.
-client.kyb.verify("registration.jpg", null, null, null, null, null, null, null, null);          // from a document
-client.kyb.verify(null, "ACME CORPORATION", null, "12345678", null, null, "US", null, null);     // from known details
+// Verify a business from its registration/incorporation document. A document is
+// required; an optional profile selects the KYC profile. The service extracts
+// the company details, checks official company registries, screens against
+// sanctions/PEP, and returns directors/owners to verify.
+client.kyb.verify("registration.jpg");                 // document required
+client.kyb.verify("registration.jpg", "YOUR_PROFILE"); // with an optional KYC profile
 
 // DocuPass — hosted remote verification link
 Docupass.CreateRequest req = new Docupass.CreateRequest();
