@@ -22,7 +22,7 @@ import java.util.Map;
  *
  * <p>Targets the {@code api2.idanalyzer.com} endpoint (US, default) or
  * {@code api2-eu.idanalyzer.com} (EU). Use the public service fields ({@link #scanner},
- * {@link #biometric}, {@link #aml}, {@link #contract}, {@link #transaction},
+ * {@link #biometric}, {@link #aml}, {@link #kyb}, {@link #contract}, {@link #transaction},
  * {@link #docupass}, {@link #profile}, {@link #webhook}, {@link #account}).
  */
 public class IDAnalyzerClient {
@@ -42,6 +42,8 @@ public class IDAnalyzerClient {
     public final Biometric biometric;
     /** AML / PEP / sanctions screening service. */
     public final AML aml;
+    /** KYB (Know Your Business) verification service. */
+    public final KYB kyb;
     /** Contract generation &amp; template management service. */
     public final Contract contract;
     /** Transaction history, decisions, vault assets and export service. */
@@ -101,6 +103,7 @@ public class IDAnalyzerClient {
         this.scanner = new Scanner(this);
         this.biometric = new Biometric(this);
         this.aml = new AML(this);
+        this.kyb = new KYB(this);
         this.contract = new Contract(this);
         this.transaction = new Transaction(this);
         this.docupass = new Docupass(this);
@@ -131,6 +134,10 @@ public class IDAnalyzerClient {
     }
 
     JsonNode request(String method, String uri, Map<String, Object> body, Map<String, String> query) {
+        return request(method, uri, body, query, 80);
+    }
+
+    JsonNode request(String method, String uri, Map<String, Object> body, Map<String, String> query, long timeoutSeconds) {
         String url = endpoint(uri);
         if (query != null && !query.isEmpty()) {
             StringBuilder qs = new StringBuilder();
@@ -145,7 +152,7 @@ public class IDAnalyzerClient {
 
         HttpRequest.Builder rb = HttpRequest.newBuilder()
                 .uri(URI.create(url))
-                .timeout(Duration.ofSeconds(80))
+                .timeout(Duration.ofSeconds(timeoutSeconds))
                 .header("X-Api-Key", apiKey);
 
         HttpRequest.BodyPublisher publisher;
